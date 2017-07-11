@@ -248,23 +248,63 @@ createTimeSlices <- function(y, initialWindow, horizon = 1, fixedWindow = TRUE, 
   ## horizon = number of consecutive values in test set sample
   ## fixedwindow = FALSE if we use the maximum possible length for the training set
   ## Ensure that initialwindow + horizon <= length(y)
-
+  
   stops <- seq(initialWindow, (length(y) - horizon), by = skip + 1)
-
+  
   if (fixedWindow) {
     starts <- stops - initialWindow + 1
   } else {
     starts <- rep(1, length(stops)) # all start at 1
   }
-
+  
   train <- mapply(seq, starts, stops, SIMPLIFY = FALSE)
-  test <- mapply(seq, stops+1, stops+horizon, SIMPLIFY = FALSE)
+  test <- mapply(seq, stops + 1, stops + horizon, SIMPLIFY = FALSE)
   nums <- gsub(" ", "0", format(stops))
   names(train) <- paste("Training", nums, sep = "")
   names(test) <- paste("Testing", nums, sep = "")
-
+  
   out <- list(train = train, test = test)
+  
+  out
+}
 
+## New function
+
+createTimeVarSlices <- function(y, counter, end, trainRatio = .66, splits = 10, horizon = 1, fixedWindow = TRUE, skip = 0) {
+  
+  initialWindow <- as.numeric(quantile(y$counter, train_ratio))
+  initialNrow <- nrow(y[y$counter <= initialWindow, ])
+  
+  nextChunk <- (1 - trainRatio) / splits
+  firstChunk <- nextChunk
+  
+  nextChunkSize <- as.integer(quantile(y$counter, trainRatio + nextChunk))
+  horizonNrow <- which(y$counter == nextChunk & y$end == 1)
+  horizon <- horizonNrow - initialNrow
+  
+  horizon <- while(initialNrow < nrow(y)){
+    
+    nextChunkSize <- as.integer(quantile(y$counter, trainRatio + firstChunk)) 
+    horizonNrow <- which(y$counter == nextChunkSize & y$end == 1)
+    horizon <- horizonNrow - initialNrow
+  }
+  
+  stops <- seq(initialWindow, (length(y) - horizon), by = skip + 1)
+  
+  if (fixedWindow) {
+    starts <- stops - initialWindow + 1
+  } else {
+    starts <- rep(1, length(stops)) # all start at 1
+  }
+  
+  train <- mapply(seq, starts, stops, SIMPLIFY = FALSE)
+  test <- mapply(seq, stops + 1, stops + horizon, SIMPLIFY = FALSE)
+  nums <- gsub(" ", "0", format(stops))
+  names(train) <- paste("Training", nums, sep = "")
+  names(test) <- paste("Testing", nums, sep = "")
+  
+  out <- list(train = train, test = test)
+  
   out
 }
 
