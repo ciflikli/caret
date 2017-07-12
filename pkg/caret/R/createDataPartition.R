@@ -268,7 +268,9 @@ createTimeSlices <- function(y, initialWindow, horizon = 1, fixedWindow = TRUE, 
   out
 }
 
-## New function
+## From Gokhan Ciflikli <g.ciflikli@lse.ac.uk> on 12/7/17
+#' @rdname createDataPartition
+#' @export
 
 createTimeVarSlices <- function(y, counter, end, trainRatio = .66, splits = 10, horizon = 1, fixedWindow = TRUE, skip = 0) {
   
