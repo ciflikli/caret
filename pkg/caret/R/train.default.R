@@ -432,6 +432,33 @@ train.default <- function(x, y,
   if(trControl$method != "oob" & is.null(trControl$index)) names(trControl$index) <- prettySeq(trControl$index)
   if(trControl$method != "oob" & is.null(names(trControl$index)))    names(trControl$index)    <- prettySeq(trControl$index)
   if(trControl$method != "oob" & is.null(names(trControl$indexOut))) names(trControl$indexOut) <- prettySeq(trControl$indexOut)
+      
+      if(is.null(trControl$indexOut) && trControl$method != "oob"){
+    if(tolower(trControl$method) != "timeslice") {
+      y_index <- if(class(y)[1] == "Surv") 1:nrow(y) else seq(along = y)
+      trControl$indexOut <- lapply(trControl$index, function(training) setdiff(y_index, training))
+      if(trControl$method %in% c("optimism_boot", "boot_all")) {
+        trControl$indexExtra <- lapply(trControl$index, function(training) {
+          list(origIndex = y_index, bootIndex = training)
+        })
+      }
+      names(trControl$indexOut) <- prettySeq(trControl$indexOut)
+    } else {
+      trControl$indexOut <- createTimeVarSlices(seq(along = y),
+                                                counter = trControl$counter,
+                                                end = trControl$end,
+                                                trainRatio = trControl$trainRatio,
+                                                splits = trControl$splits,
+                                                initialWindow = trControl$initialWindow,
+                                                horizon = trControl$horizon,
+                                                fixedWindow = trControl$fixedWindow,
+                                                skip = trControl$skip)$test
+      }
+    }
+
+  if(trControl$method != "oob" & is.null(trControl$index)) names(trControl$index) <- prettySeq(trControl$index)
+  if(trControl$method != "oob" & is.null(names(trControl$index)))    names(trControl$index)    <- prettySeq(trControl$index)
+  if(trControl$method != "oob" & is.null(names(trControl$indexOut))) names(trControl$indexOut) <- prettySeq(trControl$indexOut)
 
   ## Gather all the pre-processing info. We will need it to pass into the grid creation
   ## code so that there is a concordance between the data used for modeling and grid creation
