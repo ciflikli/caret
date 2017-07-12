@@ -373,6 +373,15 @@ train.default <- function(x, y,
                                                            horizon = trControl$horizon,
                                                            fixedWindow = trControl$fixedWindow,
                                                            skip = trControl$skip)$train,
+                              timevarslice = createTimeVarSlices(seq(along = y),
+                                                           counter = trControl$counter,
+                                                           end = trControl$end,
+                                                           trainRatio = trControl$trainRatio,
+                                                           splits = trControl$splits,
+                                                           initialWindow = trControl$initialWindow,
+                                                           horizon = trControl$horizon,
+                                                           fixedWindow = trControl$fixedWindow,
+                                                           skip = trControl$skip)$train,
                               subsemble = subsemble_index(y, V = trControl$number, J = trControl$repeats))
   } else {
     index_types <- unlist(lapply(trControl$index, is.integer))
