@@ -432,9 +432,11 @@ train.default <- function(x, y,
   if(trControl$method != "oob" & is.null(trControl$index)) names(trControl$index) <- prettySeq(trControl$index)
   if(trControl$method != "oob" & is.null(names(trControl$index)))    names(trControl$index)    <- prettySeq(trControl$index)
   if(trControl$method != "oob" & is.null(names(trControl$indexOut))) names(trControl$indexOut) <- prettySeq(trControl$indexOut)
-      
-      if(is.null(trControl$indexOut) && trControl$method != "oob"){
-    if(tolower(trControl$method) != "timeslice") {
+  
+  ## Create holdout indices for timevarslice
+                                   
+  if(is.null(trControl$indexOut) && trControl$method != "oob"){
+  if(tolower(trControl$method) != "timeslice") {
       y_index <- if(class(y)[1] == "Surv") 1:nrow(y) else seq(along = y)
       trControl$indexOut <- lapply(trControl$index, function(training) setdiff(y_index, training))
       if(trControl$method %in% c("optimism_boot", "boot_all")) {
