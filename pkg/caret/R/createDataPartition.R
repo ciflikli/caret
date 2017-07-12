@@ -271,8 +271,7 @@ createTimeSlices <- function(y, initialWindow, horizon = 1, fixedWindow = TRUE, 
 ## From Gokhan Ciflikli <g.ciflikli@lse.ac.uk> on 12/7/17
 #' @rdname createDataPartition
 #' @export
-
-createTimeVarSlices <- function(y, counter, end, trainRatio = .66, splits = 10, horizon = 1, fixedWindow = TRUE, skip = 0) {
+createTimeVarSlices <- function(y, counter, end, trainRatio = .66, splits = 10, initialWindow, horizon = 1, fixedWindow = TRUE, skip = 0) {
   
   initialWindow <- as.numeric(quantile(y$counter, train_ratio))
   initialNrow <- nrow(y[y$counter <= initialWindow, ])
